@@ -2,7 +2,7 @@
 
 An interactive, browser-based CSS showcase built with vanilla HTML, CSS, and JavaScript — no frameworks, no libraries, no dependencies. Click any of the four theme cards to apply a live animated CSS theme to the entire page. Click again to reset.
 
-**🔗 Live demo:** `https://ZGM5703.github.io/css-playground/` *(after enabling GitHub Pages — see below)*
+**🔗 Live demo:** `https://zgm5703.github.io/CSSPlayground-Live-CSS-Theme-Switcher/`
 
 ---
 
