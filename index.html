@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSSPlayground — Live Theme Switcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #f7f6f3;
+  --surface:  #ffffff;
+  --border:   #e2e1dc;
+  --text:     #1c1c1e;
+  --muted:    #6e6e73;
+  --accent:   #1c1c1e;
+  --radius:   14px;
+  --display:  'Syne', sans-serif;
+  --body:     'Inter', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  min-height: 100vh;
+  transition: background 0.6s ease, color 0.6s ease;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0 0;
+  margin-bottom: 80px;
+}
+.nav-logo {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  transition: color 0.4s;
+}
+.nav-logo span { opacity: 0.4; }
+.nav-badge {
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 13px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--muted);
+  transition: all 0.4s;
+}
+.nav-badge.active-badge {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  text-align: center;
+  margin-bottom: 72px;
+}
+.hero-eyebrow {
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+  transition: color 0.4s;
+}
+.hero h1 {
+  font-family: var(--display);
+  font-size: clamp(2.8rem, 8vw, 5.2rem);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1.0;
+  color: var(--text);
+  margin-bottom: 20px;
+  transition: color 0.4s;
+}
+.hero h1 em {
+  font-style: normal;
+  opacity: 0.35;
+}
+.hero p {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--muted);
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.7;
+  transition: color 0.4s;
+}
+
+/* ============================================================
+   THEME GRID
+   ============================================================ */
+.section-label {
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+  transition: color 0.4s;
+}
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (max-width: 560px) {
+  .theme-grid { grid-template-columns: 1fr; }
+}
+
+.theme-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  cursor: pointer;
+  transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s, background 0.4s;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+.theme-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.09);
+  border-color: var(--text);
+}
+.theme-card:active { transform: scale(0.98) translateY(0); }
+.theme-card.selected {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px var(--text);
+}
+
+.card-swatch {
+  width: 100%;
+  height: 80px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Rainbow Rush swatch */
+.swatch-rainbow {
+  background: linear-gradient(90deg,
+    #ff6b6b, #ffa94d, #ffd43b, #69db7c,
+    #4dabf7, #748ffc, #da77f2, #ff6b6b);
+  background-size: 200% 100%;
+  animation: swatchRainbow 3s linear infinite;
+}
+@keyframes swatchRainbow {
+  to { background-position: 200% 0; }
+}
+
+/* Breathe swatch */
+.swatch-breathe {
+  background: radial-gradient(circle, #a8edea, #fed6e3);
+  animation: swatchBreathe 3s ease-in-out infinite;
+}
+@keyframes swatchBreathe {
+  0%, 100% { transform: scale(1); filter: hue-rotate(0deg); }
+  50% { transform: scale(1.06); filter: hue-rotate(60deg); }
+}
+
+/* Glitch swatch */
+.swatch-glitch {
+  background: #0a0a0a;
+  position: relative;
+}
+.swatch-glitch::before {
+  content: '</CSS>';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: #00ff41;
+  animation: swatchGlitch 2s steps(1) infinite;
+}
+@keyframes swatchGlitch {
+  0%  { color: #00ff41; transform: translate(0); }
+  20% { color: #ff003c; transform: translate(-3px, 1px); }
+  40% { color: #00fff9; transform: translate(3px, -1px); }
+  60% { color: #00ff41; transform: translate(0); clip-path: inset(30% 0 40% 0); }
+  80% { color: #ff003c; transform: translate(2px, 0); }
+  100%{ color: #00ff41; transform: translate(0); }
+}
+
+/* Midnight Rave swatch */
+.swatch-rave {
+  background: #08001a;
+  position: relative;
+  overflow: hidden;
+}
+.swatch-rave::before, .swatch-rave::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  animation: swatchRave 2s ease-in-out infinite alternate;
+}
+.swatch-rave::before {
+  width: 60px; height: 60px;
+  background: radial-gradient(circle, #bf5af2, transparent 70%);
+  top: -10px; left: 20%;
+}
+.swatch-rave::after {
+  width: 80px; height: 80px;
+  background: radial-gradient(circle, #0af, transparent 70%);
+  bottom: -20px; right: 10%;
+  animation-delay: -1s;
+}
+@keyframes swatchRave {
+  from { transform: scale(1) translate(0,0); }
+  to   { transform: scale(1.5) translate(10px, -5px); }
+}
+
+.card-name {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  margin-bottom: 6px;
+  transition: color 0.4s;
+}
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  transition: color 0.4s;
+}
+.card-tag {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 10px;
+  transition: all 0.4s;
+}
+.selected .card-tag {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+/* ============================================================
+   DEMO SECTION
+   ============================================================ */
+.demo-section {
+  margin-top: 64px;
+}
+.demo-box {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 32px;
+  text-align: center;
+  transition: background 0.4s, border-color 0.4s;
+}
+.demo-box h2 {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  margin-bottom: 10px;
+  transition: color 0.4s;
+}
+.demo-box p {
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 380px;
+  margin: 0 auto 24px;
+  line-height: 1.7;
+  transition: color 0.4s;
+}
+.demo-pills {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.demo-pill {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 30px;
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  background: var(--bg);
+  transition: all 0.4s;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  margin-top: 80px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  transition: border-color 0.4s;
+}
+footer p {
+  font-size: 12px;
+  color: var(--muted);
+  transition: color 0.4s;
+}
+.reset-btn {
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.reset-btn:hover { border-color: var(--text); color: var(--text); }
+
+/* ============================================================
+   ===  THEME 1: RAINBOW RUSH  ===
+   ============================================================ */
+body.theme-rainbow {
+  animation: rainbowBg 6s linear infinite;
+}
+@keyframes rainbowBg {
+  0%   { background: #fff0f0; }
+  16%  { background: #fff8e7; }
+  33%  { background: #f0fff4; }
+  50%  { background: #e8f4ff; }
+  66%  { background: #f3eeff; }
+  83%  { background: #fff0fb; }
+  100% { background: #fff0f0; }
+}
+body.theme-rainbow .hero h1 {
+  background: linear-gradient(90deg,
+    #ff6b6b, #ffa94d, #ffd43b, #69db7c, #4dabf7, #748ffc, #da77f2, #ff6b6b);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbowText 4s linear infinite;
+}
+@keyframes rainbowText {
+  to { background-position: 300% 0; }
+}
+body.theme-rainbow nav {
+  animation: rainbowBorder 4s linear infinite;
+}
+body.theme-rainbow .theme-card {
+  animation: rainbowCard 5s linear infinite;
+  animation-delay: calc(var(--i, 0) * 0.4s);
+}
+@keyframes rainbowCard {
+  0%   { border-color: #ff6b6b; }
+  25%  { border-color: #ffd43b; }
+  50%  { border-color: #4dabf7; }
+  75%  { border-color: #da77f2; }
+  100% { border-color: #ff6b6b; }
+}
+body.theme-rainbow .demo-box {
+  animation: rainbowCard 3s linear infinite;
+}
+body.theme-rainbow .demo-pill {
+  animation: rainbowPill 3s linear infinite;
+  animation-delay: calc(var(--j, 0) * 0.5s);
+}
+@keyframes rainbowPill {
+  0%   { background: #fff0f0; border-color: #ff6b6b; color: #ff6b6b; }
+  25%  { background: #fffff0; border-color: #d4a200; color: #d4a200; }
+  50%  { background: #f0fff8; border-color: #2a9e5e; color: #2a9e5e; }
+  75%  { background: #f0f4ff; border-color: #3a6dd4; color: #3a6dd4; }
+  100% { background: #fff0f0; border-color: #ff6b6b; color: #ff6b6b; }
+}
+body.theme-rainbow .card-name {
+  background: linear-gradient(90deg, #ff6b6b, #ffd43b, #4dabf7, #da77f2, #ff6b6b);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbowText 3s linear infinite;
+}
+
+/* ============================================================
+   ===  THEME 2: BREATHE  ===
+   ============================================================ */
+body.theme-breathe {
+  animation: breatheBg 6s ease-in-out infinite;
+}
+@keyframes breatheBg {
+  0%, 100% { background: #fdf4ff; }
+  33%       { background: #f0fff8; }
+  66%       { background: #fff4f0; }
+}
+body.theme-breathe .hero h1 {
+  animation: breatheText 6s ease-in-out infinite;
+}
+@keyframes breatheText {
+  0%, 100% { color: #9b59b6; transform: scale(1); }
+  33%       { color: #27ae60; transform: scale(1.02); }
+  66%       { color: #e67e22; transform: scale(0.99); }
+}
+body.theme-breathe .page {
+  animation: breathePage 6s ease-in-out infinite;
+}
+@keyframes breathePage {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.008); }
+}
+body.theme-breathe .theme-card {
+  animation: breatheCard 6s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 1.2s);
+}
+@keyframes breatheCard {
+  0%, 100% { box-shadow: 0 4px 20px rgba(155,89,182,0.15); border-color: #d6aef0; }
+  33%       { box-shadow: 0 4px 20px rgba(39,174,96,0.15);  border-color: #a9dfbf; }
+  66%       { box-shadow: 0 4px 20px rgba(230,126,34,0.15); border-color: #f5cba7; }
+}
+body.theme-breathe .demo-box {
+  animation: breatheBox 6s ease-in-out infinite;
+}
+@keyframes breatheBox {
+  0%, 100% { background: #fdf4ff; border-color: #d6aef0; }
+  33%       { background: #f0fff8; border-color: #a9dfbf; }
+  66%       { background: #fff4f0; border-color: #f5cba7; }
+}
+body.theme-breathe .demo-pill {
+  animation: breathePill 6s ease-in-out infinite;
+  animation-delay: calc(var(--j, 0) * 0.8s);
+}
+@keyframes breathePill {
+  0%, 100% { background: #f5e6ff; border-color: #c39bd3; color: #7d3c98; }
+  33%       { background: #e8fff2; border-color: #82e0aa; color: #1e8449; }
+  66%       { background: #fff3e6; border-color: #f0b27a; color: #ca6f1e; }
+}
+body.theme-breathe .hero-eyebrow,
+body.theme-breathe .section-label {
+  animation: breatheMuted 6s ease-in-out infinite;
+}
+@keyframes breatheMuted {
+  0%, 100% { color: #9b59b6; }
+  33%       { color: #27ae60; }
+  66%       { color: #e67e22; }
+}
+
+/* ============================================================
+   ===  THEME 3: GLITCH  ===
+   ============================================================ */
+body.theme-glitch {
+  background: #0a0a0a;
+  color: #00ff41;
+  position: relative;
+}
+/* Scanlines overlay */
+body.theme-glitch::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.07) 0px,
+    rgba(0,0,0,0.07) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+body.theme-glitch .page {
+  animation: glitchShake 8s steps(1) infinite;
+}
+@keyframes glitchShake {
+  0%, 95%, 100% { transform: translate(0); }
+  96%           { transform: translate(-3px, 1px); }
+  97%           { transform: translate(3px, -1px); }
+  98%           { transform: translate(-1px, 2px); }
+  99%           { transform: translate(2px, -1px); }
+}
+body.theme-glitch .hero h1 {
+  color: #00ff41;
+  font-family: monospace;
+  animation: glitchHeading 3s steps(1) infinite;
+  position: relative;
+}
+body.theme-glitch .hero h1::before,
+body.theme-glitch .hero h1::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  font-family: monospace;
+}
+body.theme-glitch .hero h1::before {
+  color: #ff003c;
+  animation: glitchBefore 3s steps(1) infinite;
+}
+body.theme-glitch .hero h1::after {
+  color: #00fff9;
+  animation: glitchAfter 3s steps(1) infinite;
+}
+@keyframes glitchBefore {
+  0%,100%{ clip-path: inset(100% 0 0 0); transform: translate(0); }
+  10%    { clip-path: inset(20% 0 60% 0); transform: translate(-4px, 0); }
+  20%    { clip-path: inset(70% 0 10% 0); transform: translate(4px, 0); }
+  30%    { clip-path: inset(40% 0 40% 0); transform: translate(-2px, 0); }
+  40%    { clip-path: inset(100% 0 0 0); transform: translate(0); }
+  70%    { clip-path: inset(10% 0 80% 0); transform: translate(3px, 0); }
+}
+@keyframes glitchAfter {
+  0%,100%{ clip-path: inset(0 0 100% 0); transform: translate(0); }
+  15%    { clip-path: inset(60% 0 20% 0); transform: translate(3px, 0); }
+  25%    { clip-path: inset(10% 0 70% 0); transform: translate(-3px, 0); }
+  35%    { clip-path: inset(80% 0 5%  0); transform: translate(2px, 0); }
+  50%    { clip-path: inset(0 0 100% 0); transform: translate(0); }
+  80%    { clip-path: inset(30% 0 50% 0); transform: translate(-4px, 0); }
+}
+@keyframes glitchHeading {
+  0%,100%{ color: #00ff41; }
+  33%    { color: #ff003c; }
+  66%    { color: #00fff9; }
+}
+body.theme-glitch .nav-logo { color: #00ff41; }
+body.theme-glitch .hero-eyebrow { color: #00ff41; opacity: 0.6; }
+body.theme-glitch .hero p { color: #00ff41; opacity: 0.7; }
+body.theme-glitch .section-label { color: #00ff41; opacity: 0.5; }
+body.theme-glitch .theme-card {
+  background: #111;
+  border-color: #00ff41;
+  animation: glitchCardBorder 4s steps(1) infinite;
+  animation-delay: calc(var(--i, 0) * 0.7s);
+}
+@keyframes glitchCardBorder {
+  0%,100%{ border-color: #00ff41; box-shadow: 0 0 8px rgba(0,255,65,0.3); }
+  33%    { border-color: #ff003c; box-shadow: 0 0 8px rgba(255,0,60,0.3); }
+  66%    { border-color: #00fff9; box-shadow: 0 0 8px rgba(0,255,249,0.3); }
+}
+body.theme-glitch .card-name { color: #00ff41; }
+body.theme-glitch .card-desc { color: #00ff41; opacity: 0.65; }
+body.theme-glitch .card-tag { color: #00ff41; border-color: #00ff41; }
+body.theme-glitch .demo-box {
+  background: #111;
+  border-color: #00ff41;
+  box-shadow: 0 0 20px rgba(0,255,65,0.2);
+}
+body.theme-glitch .demo-box h2 { color: #00ff41; }
+body.theme-glitch .demo-box p  { color: #00ff41; opacity: 0.7; }
+body.theme-glitch .demo-pill {
+  background: #0a0a0a;
+  border-color: #00ff41;
+  color: #00ff41;
+  animation: glitchPill 3s steps(1) infinite;
+  animation-delay: calc(var(--j, 0) * 0.6s);
+}
+@keyframes glitchPill {
+  0%,100%{ border-color: #00ff41; color: #00ff41; }
+  33%    { border-color: #ff003c; color: #ff003c; }
+  66%    { border-color: #00fff9; color: #00fff9; }
+}
+body.theme-glitch footer { border-color: #1a3a1a; }
+body.theme-glitch footer p { color: #00ff41; opacity: 0.5; }
+body.theme-glitch .reset-btn { color: #00ff41; border-color: #00ff41; background: transparent; }
+body.theme-glitch .nav-badge { color: #00ff41; border-color: #00ff41; background: transparent; }
+
+/* ============================================================
+   ===  THEME 4: MIDNIGHT RAVE  ===
+   ============================================================ */
+body.theme-rave {
+  background: #08001a;
+  color: #ffffff;
+}
+body.theme-rave .page {
+  position: relative;
+}
+/* Floating orbs */
+body.theme-rave .page::before {
+  content: '';
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(191,90,242,0.2), transparent 70%);
+  top: -100px;
+  left: -100px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: raveOrb1 8s ease-in-out infinite alternate;
+  z-index: 0;
+}
+body.theme-rave .page::after {
+  content: '';
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0,170,255,0.2), transparent 70%);
+  bottom: -100px;
+  right: -100px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: raveOrb2 6s ease-in-out infinite alternate;
+  z-index: 0;
+}
+@keyframes raveOrb1 {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(80px, 60px) scale(1.3); }
+}
+@keyframes raveOrb2 {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(-60px, -80px) scale(1.2); }
+}
+body.theme-rave .hero h1 {
+  color: #ffffff;
+  animation: raveHeading 2s linear infinite;
+  text-shadow:
+    0 0 20px rgba(191,90,242,0.8),
+    0 0 40px rgba(191,90,242,0.4);
+}
+@keyframes raveHeading {
+  0%   { text-shadow: 0 0 20px rgba(191,90,242,0.9), 0 0 60px rgba(191,90,242,0.4); }
+  25%  { text-shadow: 0 0 20px rgba(0,170,255,0.9),  0 0 60px rgba(0,170,255,0.4); }
+  50%  { text-shadow: 0 0 20px rgba(255,55,95,0.9),  0 0 60px rgba(255,55,95,0.4); }
+  75%  { text-shadow: 0 0 20px rgba(50,215,75,0.9),  0 0 60px rgba(50,215,75,0.4); }
+  100% { text-shadow: 0 0 20px rgba(191,90,242,0.9), 0 0 60px rgba(191,90,242,0.4); }
+}
+body.theme-rave .hero-eyebrow { color: #bf5af2; }
+body.theme-rave .hero p { color: rgba(255,255,255,0.6); }
+body.theme-rave .section-label { color: rgba(255,255,255,0.4); }
+body.theme-rave .nav-logo { color: #ffffff; }
+body.theme-rave .nav-badge { color: #bf5af2; border-color: #bf5af2; }
+body.theme-rave .theme-card {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  animation: raveCard 3s linear infinite;
+  animation-delay: calc(var(--i, 0) * 0.6s);
+}
+@keyframes raveCard {
+  0%   { box-shadow: 0 0 15px rgba(191,90,242,0.3), inset 0 0 15px rgba(191,90,242,0.05); border-color: rgba(191,90,242,0.4); }
+  25%  { box-shadow: 0 0 15px rgba(0,170,255,0.3),  inset 0 0 15px rgba(0,170,255,0.05);  border-color: rgba(0,170,255,0.4); }
+  50%  { box-shadow: 0 0 15px rgba(255,55,95,0.3),  inset 0 0 15px rgba(255,55,95,0.05);  border-color: rgba(255,55,95,0.4); }
+  75%  { box-shadow: 0 0 15px rgba(50,215,75,0.3),  inset 0 0 15px rgba(50,215,75,0.05);  border-color: rgba(50,215,75,0.4); }
+  100% { box-shadow: 0 0 15px rgba(191,90,242,0.3), inset 0 0 15px rgba(191,90,242,0.05); border-color: rgba(191,90,242,0.4); }
+}
+body.theme-rave .card-name { color: #fff; }
+body.theme-rave .card-desc { color: rgba(255,255,255,0.55); }
+body.theme-rave .card-tag { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.15); }
+body.theme-rave .selected .card-tag { background: #bf5af2; border-color: #bf5af2; color: #fff; }
+body.theme-rave .demo-box {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  animation: raveBox 4s linear infinite;
+}
+@keyframes raveBox {
+  0%   { box-shadow: 0 0 30px rgba(191,90,242,0.25); }
+  25%  { box-shadow: 0 0 30px rgba(0,170,255,0.25); }
+  50%  { box-shadow: 0 0 30px rgba(255,55,95,0.25); }
+  75%  { box-shadow: 0 0 30px rgba(50,215,75,0.25); }
+  100% { box-shadow: 0 0 30px rgba(191,90,242,0.25); }
+}
+body.theme-rave .demo-box h2 { color: #fff; }
+body.theme-rave .demo-box p  { color: rgba(255,255,255,0.6); }
+body.theme-rave .demo-pill {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.15);
+  color: #fff;
+  animation: ravePill 3s linear infinite;
+  animation-delay: calc(var(--j, 0) * 0.5s);
+}
+@keyframes ravePill {
+  0%   { border-color: rgba(191,90,242,0.6); box-shadow: 0 0 8px rgba(191,90,242,0.3); }
+  25%  { border-color: rgba(0,170,255,0.6);  box-shadow: 0 0 8px rgba(0,170,255,0.3); }
+  50%  { border-color: rgba(255,55,95,0.6);  box-shadow: 0 0 8px rgba(255,55,95,0.3); }
+  75%  { border-color: rgba(50,215,75,0.6);  box-shadow: 0 0 8px rgba(50,215,75,0.3); }
+  100% { border-color: rgba(191,90,242,0.6); box-shadow: 0 0 8px rgba(191,90,242,0.3); }
+}
+body.theme-rave footer { border-color: rgba(255,255,255,0.08); }
+body.theme-rave footer p { color: rgba(255,255,255,0.3); }
+body.theme-rave .reset-btn { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.2); background: transparent; }
+body.theme-rave .reset-btn:hover { color: #fff; border-color: #fff; }
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: background 0.3s, color 0.3s !important; }
+}
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <div class="nav-logo">CSS<span>Playground</span></div>
+    <div class="nav-badge" id="nav-badge">No theme active</div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Interactive CSS Showcase</div>
+    <h1 id="hero-title" data-text="Pick a theme.">Pick a<br><em>theme.</em></h1>
+    <p>Click any card below to apply a live CSS theme to the entire page. Click the same card again to reset.</p>
+  </section>
+
+  <div class="section-label">Choose a theme</div>
+  <div class="theme-grid">
+
+    <div class="theme-card" id="card-rainbow" style="--i:0" onclick="applyTheme('rainbow')">
+      <div class="card-swatch swatch-rainbow"></div>
+      <div class="card-name">Rainbow Rush</div>
+      <div class="card-desc">The whole page cycles through the spectrum. Borders, text, and backgrounds all join the parade.</div>
+      <span class="card-tag">Color Cycling</span>
+    </div>
+
+    <div class="theme-card" id="card-breathe" style="--i:1" onclick="applyTheme('breathe')">
+      <div class="card-swatch swatch-breathe"></div>
+      <div class="card-name">Breathe</div>
+      <div class="card-desc">The page inhales and exhales. Slow pastel waves pulse through every element in rhythm.</div>
+      <span class="card-tag">Ambient Pulse</span>
+    </div>
+
+    <div class="theme-card" id="card-glitch" style="--i:2" onclick="applyTheme('glitch')">
+      <div class="card-swatch swatch-glitch"></div>
+      <div class="card-name">Glitch</div>
+      <div class="card-desc">Terminal green, scanline overlay, RGB color splitting, and screen shake. Controlled chaos.</div>
+      <span class="card-tag">RGB Split</span>
+    </div>
+
+    <div class="theme-card" id="card-rave" style="--i:3" onclick="applyTheme('rave')">
+      <div class="card-swatch swatch-rave"></div>
+      <div class="card-name">Midnight Rave</div>
+      <div class="card-desc">Deep dark takeover with floating neon orbs, glow halos, and cycling neon light on everything.</div>
+      <span class="card-tag">Neon Glow</span>
+    </div>
+
+  </div>
+
+  <div class="demo-section">
+    <div class="section-label" style="margin-top:48px;">Live preview elements</div>
+    <div class="demo-box">
+      <h2>Everything reacts.</h2>
+      <p>Cards, text, borders, backgrounds, buttons — every element on the page is part of the theme. Nothing is exempt.</p>
+      <div class="demo-pills">
+        <span class="demo-pill" style="--j:0">Typography</span>
+        <span class="demo-pill" style="--j:1">Borders</span>
+        <span class="demo-pill" style="--j:2">Backgrounds</span>
+        <span class="demo-pill" style="--j:3">Shadows</span>
+        <span class="demo-pill" style="--j:4">Animations</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Built with vanilla CSS animations · No JavaScript animation libraries</p>
+    <button class="reset-btn" onclick="resetTheme()">Reset to default</button>
+  </footer>
+
+</div>
+
+<script>
+const THEMES = {
+  rainbow: { class: 'theme-rainbow', label: 'Rainbow Rush' },
+  breathe: { class: 'theme-breathe', label: 'Breathe' },
+  glitch:  { class: 'theme-glitch',  label: 'Glitch' },
+  rave:    { class: 'theme-rave',    label: 'Midnight Rave' },
+};
+
+let current = null;
+
+function applyTheme(key) {
+  const body = document.body;
+  const badge = document.getElementById('nav-badge');
+
+  // Remove all theme classes and card selection
+  Object.values(THEMES).forEach(t => body.classList.remove(t.class));
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+
+  // Toggle off if same theme clicked again
+  if (current === key) {
+    current = null;
+    badge.textContent = 'No theme active';
+    badge.classList.remove('active-badge');
+    return;
+  }
+
+  // Apply new theme
+  current = key;
+  body.classList.add(THEMES[key].class);
+  document.getElementById('card-' + key).classList.add('selected');
+  badge.textContent = THEMES[key].label + ' — active';
+  badge.classList.add('active-badge');
+}
+
+function resetTheme() {
+  Object.values(THEMES).forEach(t => document.body.classList.remove(t.class));
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+  const badge = document.getElementById('nav-badge');
+  badge.textContent = 'No theme active';
+  badge.classList.remove('active-badge');
+  current = null;
+}
+</script>
+</body>
+</html>
